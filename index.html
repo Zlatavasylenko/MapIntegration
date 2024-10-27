@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Країни та їх характеристики</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        #map {
+            height: 400px;
+            width: 800px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #filter {
+            margin-top: 20px;
+            width: 300px;
+        }
+
+        .container {
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 800px;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRUqRpi1w3F8HSvua6iBffWhMaiR7b63Y&callback=initMap"
+        async defer></script>
+</head>
+
+<body>
+    <select id="filter" onchange="filterCountries()">
+        <option value="">Оберіть фільтр...</option>
+        <option value="top_population_desc">Топ 3 країн з найбільшим населенням</option>
+        <option value="top_population_asc">Топ 3 країн з найменшим населенням</option>
+        <option value="top_area_desc">Топ 3 країн з найбільшою площею</option>
+        <option value="top_area_asc">Топ 3 країн з найменшою площею</option>
+        <option value="top_temperature_desc">Топ 3 країн з найвищою температурою влітку</option>
+        <option value="top_temperature_asc">Топ 3 країн з найменшою температурою влітку</option>
+    </select>
+    <table id="countriesTable">
+        <tr>
+            <th>#</th>
+            <th>Країна</th>
+            <th>Населення</th>
+            <th>Площа (км²)</th>
+            <th>Середня температура влітку (°C)</th>
+            <th>Широта</th>
+            <th>Довгота</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Великобританія</td>
+            <td>67,886,011</td>
+            <td>243,610</td>
+            <td>15</td>
+            <td>55.3781</td>
+            <td>-3.4360</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Німеччина</td>
+            <td>83,166,711</td>
+            <td>357,022</td>
+            <td>20</td>
+            <td>51.1657</td>
+            <td>10.4515</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Франція</td>
+            <td>67,848,156</td>
+            <td>551,695</td>
+            <td>23</td>
+            <td>46.6034</td>
+            <td>1.8883</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Італія</td>
+            <td>60,461,826</td>
+            <td>301,340</td>
+            <td>22</td>
+            <td>41.8719</td>
+            <td>12.5674</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Іспанія</td>
+            <td>47,450,795</td>
+            <td>505,990</td>
+            <td>25</td>
+            <td>40.4637</td>
+            <td>-3.7492</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Польща</td>
+            <td>38,282,325</td>
+            <td>312,696</td>
+            <td>19</td>
+            <td>51.9194</td>
+            <td>19.1451</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Нідерланди</td>
+            <td>17,441,139</td>
+            <td>41,543</td>
+            <td>21</td>
+            <td>52.3784</td>
+            <td>4.8997</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Швеція</td>
+            <td>10,450,441</td>
+            <td>450,295</td>
+            <td>17</td>
+            <td>60.1282</td>
+            <td>18.6435</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>Австрія</td>
+            <td>8,902,600</td>
+            <td>83,879</td>
+            <td>23</td>
+            <td>47.5162</td>
+            <td>14.5501</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>Чехія</td>
+            <td>10,701,777</td>
+            <td>78,865</td>
+            <td>22</td>
+            <td>49.8175</td>
+            <td>15.4720</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td>Фінляндія</td>
+            <td>5,540,720</td>
+            <td>338,424</td>
+            <td>16</td>
+            <td>61.9241</td>
+            <td>25.7482</td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td>Данія</td>
+            <td>5,806,158</td>
+            <td>43,094</td>
+            <td>18</td>
+            <td>56.2639</td>
+            <td>9.5018</td>
+        </tr>
+        <tr>
+            <td>13</td>
+            <td>Бельгія</td>
+            <td>11,589,623</td>
+            <td>30,528</td>
+            <td>22</td>
+            <td>50.8503</td>
+            <td>4.3517</td>
+        </tr>
+        <tr>
+            <td>14</td>
+            <td>Швейцарія</td>
+            <td>8,654,622</td>
+            <td>41,290</td>
+            <td>21</td>
+            <td>46.8182</td>
+            <td>8.2275</td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>Греція</td>
+            <td>10,224,840</td>
+            <td>131,957</td>
+            <td>30</td>
+            <td>39.0742</td>
+            <td>21.8243</td>
+        </tr>
+        <tr>
+            <td>16</td>
+            <td>Португалія</td>
+            <td>10,196,709</td>
+            <td>92,212</td>
+            <td>26</td>
+            <td>39.3999</td>
+            <td>-8.2245</td>
+        </tr>
+        <tr>
+            <td>17</td>
+            <td>Норвегія</td>
+            <td>5,465,121</td>
+            <td>323,802</td>
+            <td>19</td>
+            <td>60.4720</td>
+            <td>8.4689</td>
+        </tr>
+    </table>
+
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let markers = []; // масив для зберігання маркерів
+
+        // Дані країн
+        const countries = [
+            { name: "Великобританія", lat: 55.3781, lng: -3.4360 },
+            { name: "Німеччина", lat: 51.1657, lng: 10.4515 },
+            { name: "Франція", lat: 46.6034, lng: 1.8883 },
+            { name: "Італія", lat: 41.8719, lng: 12.5674 },
+            { name: "Іспанія", lat: 40.4637, lng: -3.7492 },
+            { name: "Польща", lat: 51.9194, lng: 19.1451 },
+            { name: "Нідерланди", lat: 52.3784, lng: 4.8997 },
+            { name: "Швеція", lat: 60.1282, lng: 18.6435 },
+            { name: "Австрія", lat: 47.5162, lng: 14.5501 },
+            { name: "Чехія", lat: 49.8175, lng: 15.4720 },
+            { name: "Фінляндія", lat: 61.9241, lng: 25.7482 },
+            { name: "Данія", lat: 56.2639, lng: 9.5018 },
+            { name: "Бельгія", lat: 50.8503, lng: 4.3517 },
+            { name: "Швейцарія", lat: 46.8182, lng: 8.2275 },
+            { name: "Греція", lat: 39.0742, lng: 21.8243 },
+            { name: "Португалія", lat: 39.3999, lng: -8.2245 },
+            { name: "Норвегія", lat: 60.4720, lng: 8.4689 }
+        ];
+
+        // Ініціалізація карти
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 54.5260, lng: 15.2551 },
+                zoom: 4,
+            });
+
+            // Додавання маркерів для всіх країн
+            countries.forEach((country) => {
+                const marker = new google.maps.Marker({
+                    position: { lat: country.lat, lng: country.lng },
+                    map: map,
+                    title: country.name,
+                });
+                markers.push(marker); // додавання маркера в масив
+            });
+        }
+
+        // Функція для фільтрації країн
+            function filterCountries() {
+                const filterValue = document.getElementById("filter").value;
+                const table = document.getElementById("countriesTable");
+                const rows = table.getElementsByTagName("tr");
+
+                // Скидання маркерів на карті
+                markers.forEach(marker => marker.setMap(null));
+                markers = []; // очищення масиву маркерів
+
+                // Перебір рядків таблиці
+                const countriesData = Array.from(rows).slice(1); // пропуск заголовка
+                let filteredCountries = [];
+
+                // Логіка фільтрації
+                if (filterValue === "top_population_desc") {
+                    filteredCountries = countriesData.sort((a, b) => {
+                        return parseInt(b.cells[2].innerText.replace(/,/g, ''), 10) - parseInt(a.cells[2].innerText.replace(/,/g, ''), 10);
+                    }).slice(0, 3);
+                     } else if (filterValue === "top_population_asc") {
+                    filteredCountries = countriesData.sort((a, b) => {
+                    return parseInt(a.cells[2].innerText.replace(/,/g, ''), 10) - parseInt(b.cells[2].innerText.replace(/,/g, ''), 10);
+                    }).slice(0, 3);
+                   } else if (filterValue === "top_area_desc") {
+                    filteredCountries = countriesData.sort((a, b) => {
+                     return parseInt(b.cells[3].innerText.replace(/,/g, ''), 10) - parseInt(a.cells[3].innerText.replace(/,/g, ''), 10);
+                     }).slice(0, 3);
+                    } else if (filterValue === "top_area_asc") {
+                    filteredCountries = countriesData.sort((a, b) => {
+                    return parseInt(a.cells[3].innerText.replace(/,/g, ''), 10) - parseInt(b.cells[3].innerText.replace(/,/g, ''), 10);
+                    }).slice(0, 3);
+                    } else if (filterValue === "top_temperature_desc") {
+                    filteredCountries = countriesData.sort((a, b) => {
+                    return parseInt(b.cells[4].innerText) - parseInt(a.cells[4].innerText);
+                    }).slice(0, 3);
+                    } else if (filterValue === "top_temperature_asc") {
+                    filteredCountries = countriesData.sort((a, b) => {
+                    return parseInt(a.cells[4].innerText) - parseInt(b.cells[4].innerText);
+                    }).slice(0, 3);
+                    }
+
+                    // Очищення таблиці та додавання фільтрованих країн
+                    for (let i = 1; i < rows.length; i++) {
+                    rows[i].style.display = "none"; 
+                    }
+                    filteredCountries.forEach((row) => {
+                    row.style.display = ""; 
+                    const countryName = row.cells[1].innerText;
+                    const countryData = countries.find(c => c.name === countryName);
+                    if (countryData) {
+                    const marker = new google.maps.Marker({
+                    position: { lat: countryData.lat, lng: countryData.lng },
+                    map: map,
+                    title: countryData.name,
+                    });
+                    markers.push(marker); 
+                    }
+                    });
+                    }
+                    </script>
+    </body>
+    
+    </html>
